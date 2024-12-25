@@ -26,9 +26,14 @@ export const SendMessageController= async (req, res) => {
 		if (newMessage) {
 			conversation.messages.push(newMessage._id);
 		}
-//Socket.io functionality 
-		await conversation.save();
-		await newMessage.save();
+
+		// await conversation.save();
+		// await newMessage.save();
+
+		// this will run in parallel
+		await Promise.all([conversation.save(), newMessage.save()]);
+
+		// SOCKET IO FUNCTIONALITY WILL GO HERE
 		const receiverSocketId = getReceiverSocketId(receiverId);
 		if (receiverSocketId) {
 			// io.to(<socket_id>).emit() used to send events to specific client
@@ -36,7 +41,6 @@ export const SendMessageController= async (req, res) => {
 		}
 
 		res.status(201).json(newMessage);
-
 		return res.status(201).json({ message: "Message sent successfully" });
     } catch (error) {
 		console.log(error);
