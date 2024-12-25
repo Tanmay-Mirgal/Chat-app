@@ -26,7 +26,7 @@ export const SendMessageController= async (req, res) => {
 		if (newMessage) {
 			conversation.messages.push(newMessage._id);
 		}
-
+//Socket.io functionality 
 		await conversation.save();
 		await newMessage.save();
 
@@ -37,3 +37,28 @@ export const SendMessageController= async (req, res) => {
 		
     }
 };
+
+export const GetMessageController= async (req, res) => {
+	try {
+		const { id:userToChatId} = req.params;
+		
+		const senderId = req.user._id;
+		console.log(userToChatId);
+		console.log(senderId);
+
+		const conversations = await Conversation.findOne({
+			participants:{$all:[senderId,userToChatId]}
+		}).populate("messages");//we dont want id soo we populate the messages from that ids
+
+		if(!conversations){
+			return res.status(404).json({message:"No conversation found"});
+		}
+		console.log(conversations.messages);
+
+		return res.status(200).json(conversations.messages ); 
+		} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: error.message });
+	}
+};
+
