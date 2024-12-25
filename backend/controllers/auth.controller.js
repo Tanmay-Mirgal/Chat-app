@@ -40,7 +40,7 @@ export const SignupController = async (req, res) => {
             await newUser.save();
 
             //jwt token
-            const token = jwt.sign({ username }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+            const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
             //cookie
             res.cookie("token", token, {
                 httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production",
@@ -74,7 +74,7 @@ export const LoginController = async (req, res) => {
         }
 
         if (isMatch && user) {
-            const token = jwt.sign({ username }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
             res.cookie("token", token, {
                 httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production",
                 maxAge: 3600000
